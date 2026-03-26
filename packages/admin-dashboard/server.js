@@ -4,10 +4,13 @@
  * - Serves dist/ at / with SPA fallback (unknown paths -> index.html).
  * - index.html sent with no-cache so updates are picked up.
  */
-const http = require('http')
-const fs = require('fs')
-const path = require('path')
-const url = require('url')
+import http from 'node:http'
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const DIST = path.join(__dirname, 'dist')
 const PORT = 5174
@@ -31,7 +34,7 @@ function sendFile(res, filePath, contentType) {
 }
 
 const server = http.createServer((req, res) => {
-  const pathname = url.parse(req.url).pathname
+  const pathname = new URL(req.url, 'http://localhost').pathname
 
   // Redirect old /admin paths to root so correct assets load
   if (pathname === '/admin' || pathname === '/admin/' || pathname.startsWith('/admin/')) {
